@@ -1,0 +1,74 @@
+#
+# Copyright (c) 2019-2021 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# File: .github/workflows/update-checker.yml
+# Description: Source code update checker
+#
+
+name: Update Checker
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede
+  REPO_BRANCH: master
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 22 * * *
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+    
+    - name: Get Commit Hash
+      id: getHash
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
+        echo "commitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+#
+#    - name: Compare Commit Hash
+#      id: cacheHash
+#      uses: actions/cache@v3
+#      with:
+#        path: .commitHash
+#        key: HEAD-${{ steps.getHash.outputs.commitHash }}
+#
+#    - name: Save New Commit Hash
+#      if: steps.cacheHash.outputs.cache-hit != 'true'
+#      run: |
+#        echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
+
+    - name: Trigger build
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      uses: peter-evans/repository-dispatch@v2
+      with:
+        token: ${{ secrets.ACTIONS_TRIGGER_PAT }}
+        event-type: lede Source Code Update
+
+    - name: Source Code Update notification
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      run: |
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${{ env.FILE_NAME }}lede源码更新了" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+
+#    - name: Delete workflow runs
+#      uses: Mattraks/delete-workflow-runs@v2
+#      with:
+#        token: ${{ secrets.GITHUB_TOKEN }}
+#        repository: ${{ github.repository }}
+#        retain_days: 3
+#        keep_minimum_runs: 1
+#
+#    - name: Remove old Releases
+#      uses: dev-drprasad/delete-older-releases@v0.2.1
+#      with:
+#        repo: ${{ github.repository }}
+#        keep_latest: 4
+#        delete_tags: true
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
