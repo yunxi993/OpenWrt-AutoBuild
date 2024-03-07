@@ -34,9 +34,9 @@ git clone -b main --depth=1 https://github.com/fw876/helloworld.git package/hell
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall-packages
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2.git package/openwrt-passwall2
 git clone --depth=1 https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
-#rm -rf package/helloworld/hysteria
-#rm -rf package/helloworld/v2ray-core
-#rm -rf package/helloworld/v2ray-plugin
+
+# Update Go Version
+rm -rf feeds/packages/lang/golang && git clone -b 22.x https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
 
 # dockerd去版本验证
 #sed -i 's/^\s*$[(]call\sEnsureVendoredVersion/#&/' feeds/packages/utils/dockerd/Makefile
