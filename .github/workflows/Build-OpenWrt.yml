@@ -119,7 +119,7 @@ jobs:
     - name: Clean up server space
       run: |
         cd openwrt/
-        rm -rf $(ls . | grep -v "^bin$" | xargs) 2>/dev/null
+        rm -rf $(ls . | grep -v "^bin$|^toolchain$" | xargs) 2>/dev/null
         df -hT ${PWD}
 
     - name: Check space usage
