@@ -97,9 +97,9 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: cache
-      uses: HiGarfield/cachewrtbuild@main
+      uses: yunxi993/cachewrtbuild@main
       with:
-        ccache: 'false'
+        ccache: 'true'
         mixkey: ARMv8
         prefix: ${{ github.workspace }}/openwrt
 
