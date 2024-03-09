@@ -28,6 +28,8 @@ sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/
 # Change default theme
 sed -i 's#luci-theme-bootstrap#luci-theme-opentomcat#g' feeds/luci/collections/luci/Makefile
 sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
+echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> $GITHUB_WORKSPACE/configs/lede/Build-x86.config; make defconfig
+echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> $GITHUB_WORKSPACE/configs/lede/Build-x86d.config; make defconfig
 
 # Add additional packages
 git clone -b main --depth=1 https://github.com/fw876/helloworld.git package/helloworld
@@ -36,7 +38,7 @@ git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2.git package/o
 git clone --depth=1 https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
 
 # Delete mosdns
-rm -rf feeds/packages/net/mosdns
+#rm -rf feeds/packages/net/mosdns
 
 # Update Go Version
 rm -rf feeds/packages/lang/golang && git clone -b 22.x https://github.com/sbwml/packages_lang_golang feeds/packages/lang/golang
