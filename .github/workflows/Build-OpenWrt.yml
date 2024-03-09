@@ -97,7 +97,7 @@ jobs:
         find dl -size -1024c -exec rm -f {} \;
 
     - name: cache
-      uses: yunxi993/cachewrtbuild@main
+      uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: 'true'
         mixkey: ARMv8
