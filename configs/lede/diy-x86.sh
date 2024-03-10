@@ -28,8 +28,6 @@ sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S")/g' package/lean/autocore/files/
 # Change default theme
 sed -i 's#luci-theme-bootstrap#luci-theme-opentomcat#g' feeds/luci/collections/luci/Makefile
 sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
-#echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> $GITHUB_WORKSPACE/configs/lede/Build-x86.config; make defconfig
-#echo -e 'CONFIG_DEVEL=y\nCONFIG_CCACHE=y' >> $GITHUB_WORKSPACE/configs/lede/Build-x86d.config; make defconfig
 
 # Add additional packages
 git clone -b main --depth=1 https://github.com/fw876/helloworld.git package/helloworld

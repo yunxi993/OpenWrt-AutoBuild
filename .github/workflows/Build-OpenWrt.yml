@@ -39,7 +39,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=ARMv8 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=ARMv8 正在使用  [${CPUNAME} CPU]  [${CPUCORES}  核心] [lede]  源码  编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -59,10 +59,20 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+    - name: Combine Disks
+      uses: easimon/maximize-build-space@master
+      with:
+        swap-size-mb: 1024
+        temp-reserve-mb: 100
+        root-reserve-mb: 1024
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
+        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -92,7 +102,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j16
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -120,7 +130,7 @@ jobs:
       run: |
         cd openwrt/
         rm -rf $(ls . | grep -vE "^bin$|^toolchain$" | xargs) 2>/dev/null
-        df -hT ${PWD}
+        df -hT
 
     - name: Check space usage
       if: (!cancelled())
@@ -243,7 +253,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心] [lede] 源码 编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86 正在使用  [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede]  源码  编译固件,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -263,10 +273,20 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+    - name: Combine Disks
+      uses: easimon/maximize-build-space@master
+      with:
+        swap-size-mb: 1024
+        temp-reserve-mb: 100
+        root-reserve-mb: 1024
+
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
+        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -296,7 +316,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j16
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -426,7 +446,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-docker 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [lede] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-docker  正在使用  [${CPUNAME} CPU]  [${CPUCORES}  核心] [lede]  源码  编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -446,10 +466,20 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+    - name: Combine Disks
+      uses: easimon/maximize-build-space@master
+      with:
+        swap-size-mb: 1024
+        temp-reserve-mb: 100
+        root-reserve-mb: 1024
+  
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
+        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -479,7 +509,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j16
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -609,7 +639,7 @@ jobs:
         cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
         sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
         CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
-        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-official 正在使用 [${CPUNAME} CPU]  [${CPUCORES} 核心]  [openwrt] 源码 编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
+        curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=x86-official  正在使用  [${CPUNAME} CPU]  [${CPUCORES}  核心] [openwrt] 源码  编译固件中,请耐心等待..." "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
     - name: Initialization environment
       env:
@@ -629,10 +659,20 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+    - name: Combine Disks
+      uses: easimon/maximize-build-space@master
+      with:
+        swap-size-mb: 1024
+        temp-reserve-mb: 100
+        root-reserve-mb: 1024
+  
+    - name: Checkout
+      uses: actions/checkout@v4
+
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
+        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
@@ -662,7 +702,7 @@ jobs:
       run: |
         cd openwrt
         make defconfig
-        make download -j16
+        make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
