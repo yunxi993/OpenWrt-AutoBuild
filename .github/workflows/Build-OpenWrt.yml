@@ -59,15 +59,16 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Combine Disks
-      uses: easimon/maximize-build-space@master
+    - name: Free up space
+      uses: jlumbroso/free-disk-space@main
       with:
-        swap-size-mb: 1024
-        temp-reserve-mb: 100
-        root-reserve-mb: 1024
-
-    - name: Checkout
-      uses: actions/checkout@v4
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true  
 
     - name: Clone source code
       working-directory: /workdir
@@ -273,15 +274,16 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Combine Disks
-      uses: easimon/maximize-build-space@master
+    - name: Free up space
+      uses: jlumbroso/free-disk-space@main
       with:
-        swap-size-mb: 1024
-        temp-reserve-mb: 100
-        root-reserve-mb: 1024
-
-    - name: Checkout
-      uses: actions/checkout@v4
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true  
 
     - name: Clone source code
       working-directory: /workdir
@@ -466,15 +468,16 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Combine Disks
-      uses: easimon/maximize-build-space@master
+    - name: Free up space
+      uses: jlumbroso/free-disk-space@main
       with:
-        swap-size-mb: 1024
-        temp-reserve-mb: 100
-        root-reserve-mb: 1024
-  
-    - name: Checkout
-      uses: actions/checkout@v4
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true  
 
     - name: Clone source code
       working-directory: /workdir
@@ -659,15 +662,16 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
-    - name: Combine Disks
-      uses: easimon/maximize-build-space@master
+    - name: Free up space
+      uses: jlumbroso/free-disk-space@main
       with:
-        swap-size-mb: 1024
-        temp-reserve-mb: 100
-        root-reserve-mb: 1024
-  
-    - name: Checkout
-      uses: actions/checkout@v4
+        tool-cache: true
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: true
+        swap-storage: true  
 
     - name: Clone source code
       working-directory: /workdir
