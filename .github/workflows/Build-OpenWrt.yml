@@ -49,7 +49,7 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         sudo -E apt-mark hold grub-efi-amd64-signed
         sudo -E apt update
-        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E apt -y purge docker* ghc* zulu* dotnet* openjdk* mysql* php* dotnet* snap*
         sudo -E apt -y full-upgrade
         sudo -E apt -y install $(curl -fsSL https://is.gd/depends_ubuntu_2204)
         sudo -E systemctl daemon-reload
@@ -58,6 +58,7 @@ jobs:
         sudo -E timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        df -hT
 
     - name: Free up space
       uses: jlumbroso/free-disk-space@main
@@ -73,9 +74,9 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        df -hT
 
     - name: Load custom feeds
       run: |
@@ -106,18 +107,23 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
+        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
 
     - name: cache
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: ARMv8
+        mixkey: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        df -hT
         echo -e "$(($(nproc)+1)) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "{status}={success}" >> $GITHUB_OUTPUT
@@ -126,12 +132,13 @@ jobs:
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
-
-    - name: Clean up server space
-      run: |
-        cd openwrt/
-        rm -rf $(ls . | grep -vE "^bin$|^toolchain$" | xargs) 2>/dev/null
         df -hT
+#
+#    - name: Clean up server space
+#      run: |
+#        cd openwrt/
+#        rm -rf $(ls . | grep -vE "^bin$|^toolchain$" | xargs) 2>/dev/null
+#        df -hT
 
     - name: Check space usage
       if: (!cancelled())
@@ -264,7 +271,7 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         sudo -E apt-mark hold grub-efi-amd64-signed
         sudo -E apt update
-        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E apt -y purge docker* ghc* zulu* dotnet* openjdk* mysql* php* dotnet* snap*
         sudo -E apt -y full-upgrade
         sudo -E apt -y install $(curl -fsSL https://is.gd/depends_ubuntu_2204)
         sudo -E systemctl daemon-reload
@@ -273,6 +280,7 @@ jobs:
         sudo -E timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        df -hT
 
     - name: Free up space
       uses: jlumbroso/free-disk-space@main
@@ -288,9 +296,9 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        df -hT
 
     - name: Load custom feeds
       run: |
@@ -321,18 +329,23 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
+        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
 
     - name: cache    
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: x86
+        mixkey: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        df -hT
         echo -e "$(($(nproc)+1)) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "{status}={success}" >> $GITHUB_OUTPUT
@@ -341,6 +354,7 @@ jobs:
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
+        df -hT
 
     - name: Check space usage
       if: (!cancelled())
@@ -458,7 +472,7 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         sudo -E apt-mark hold grub-efi-amd64-signed
         sudo -E apt update
-        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E apt -y purge docker* ghc* zulu* dotnet* openjdk* mysql* php* dotnet* snap*
         sudo -E apt -y full-upgrade
         sudo -E apt -y install $(curl -fsSL https://is.gd/depends_ubuntu_2204)
         sudo -E systemctl daemon-reload
@@ -467,6 +481,7 @@ jobs:
         sudo -E timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        df -hT
 
     - name: Free up space
       uses: jlumbroso/free-disk-space@main
@@ -482,9 +497,9 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        df -hT
 
     - name: Load custom feeds
       run: |
@@ -515,18 +530,23 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
+        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
 
     - name: cache
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: x86d
+        mixkey: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        df -hT
         echo -e "$(($(nproc)+1)) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "{status}={success}" >> $GITHUB_OUTPUT
@@ -535,6 +555,7 @@ jobs:
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
+        df -hT
 
     - name: Check space usage
       if: (!cancelled())
@@ -652,7 +673,7 @@ jobs:
         sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
         sudo -E apt-mark hold grub-efi-amd64-signed
         sudo -E apt update
-        sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
+        sudo -E apt -y purge docker* ghc* zulu* dotnet* openjdk* mysql* php* dotnet* snap*
         sudo -E apt -y full-upgrade
         sudo -E apt -y install $(curl -fsSL https://is.gd/depends_ubuntu_2204)
         sudo -E systemctl daemon-reload
@@ -661,6 +682,7 @@ jobs:
         sudo -E timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        df -hT
 
     - name: Free up space
       uses: jlumbroso/free-disk-space@main
@@ -676,9 +698,9 @@ jobs:
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        df -hT
 
     - name: Load custom feeds
       run: |
@@ -709,18 +731,23 @@ jobs:
         make download -j$(nproc)
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        DEVICE_TARGET=$(cat .config | grep CONFIG_TARGET_BOARD | awk -F '"' '{print $2}')
+        echo "DEVICE_TARGET=$DEVICE_TARGET" >> $GITHUB_ENV
+        DEVICE_SUBTARGET=$(cat .config | grep CONFIG_TARGET_SUBTARGET | awk -F '"' '{print $2}')
+        echo "DEVICE_SUBTARGET=$DEVICE_SUBTARGET" >> $GITHUB_ENV
 
     - name: cache
       uses: HiGarfield/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: x86o
+        mixkey: ${{ env.DEVICE_TARGET }}-${{ env.DEVICE_SUBTARGET }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        df -hT
         echo -e "$(($(nproc)+1)) thread compile"
         make -j$(($(nproc)+1)) || make -j1 V=s
         echo "{status}={success}" >> $GITHUB_OUTPUT
@@ -729,6 +756,7 @@ jobs:
         echo "FILE_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_ENV
         echo "TAG_DATE=$(date +"%m%d-%H%M%S")" >> $GITHUB_ENV
+        df -hT
 
     - name: Check space usage
       if: (!cancelled())
