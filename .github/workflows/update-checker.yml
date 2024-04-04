@@ -1,12 +1,13 @@
 #
-# Copyright (c) 2019-2021 P3TERX <https://p3terx.com>
+# https://github.com/P3TERX/Actions-OpenWrt
+#
+# File: .github/workflows/update-checker.yml
+# Description: Source code update checker
+#
+# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
 #
 # This is free software, licensed under the MIT License.
 # See /LICENSE for more information.
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-# File: .github/workflows/update-checker.yml
-# Description: Source code update checker
 #
 
 name: Update Checker
@@ -25,31 +26,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
+
     - name: Get Commit Hash
       id: getHash
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH .
         echo "commitHash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-#
-#    - name: Compare Commit Hash
-#      id: cacheHash
-#      uses: actions/cache@v3
-#      with:
-#        path: .commitHash
-#        key: HEAD-${{ steps.getHash.outputs.commitHash }}
-#
-#    - name: Save New Commit Hash
-#      if: steps.cacheHash.outputs.cache-hit != 'true'
-#      run: |
-#        echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
+
+    - name: Compare Commit Hash
+      id: cacheHash
+      uses: actions/cache@v4
+      with:
+        path: .commitHash
+        key: commitHash_${{ steps.getHash.outputs.commitHash }}
+
+    - name: Save New Commit Hash
+      if: steps.cacheHash.outputs.cache-hit != 'true'
+      run: |
+        echo ${{ steps.getHash.outputs.commitHash }} | tee .commitHash
 
     - name: Trigger build
       if: steps.cacheHash.outputs.cache-hit != 'true'
-      uses: peter-evans/repository-dispatch@v2
+      uses: peter-evans/repository-dispatch@v3
       with:
-        token: ${{ secrets.ACTIONS_TRIGGER_PAT }}
-        event-type: lede Source Code Update
+        token: ${{ github.token }}
+        event-type: Source Code Update
 
     - name: Source Code Update notification
       if: steps.cacheHash.outputs.cache-hit != 'true'
