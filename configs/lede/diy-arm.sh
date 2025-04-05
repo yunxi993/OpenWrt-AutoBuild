@@ -33,11 +33,14 @@ sed -i 's#luci-theme-bootstrap#luci-theme-opentomcat#g' feeds/luci/collections/l
 sed -i '/set luci.main.mediaurlbase=\/luci-static\/bootstrap/d' feeds/luci/themes/luci-theme-bootstrap/root/etc/uci-defaults/30_luci-theme-bootstrap
 
 # Add additional packages
+rm -rf feeds/packages/net/{xray-core,v2ray-core,sing-box}
+rm -rf feeds/luci/applications/{luci-app-ssr-plus,luci-app-passwall,luci-app-passwall2,luci-app-ddns-go}
 git clone --depth=1 https://github.com/fw876/helloworld.git package/helloworld
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall-packages.git package/openwrt-passwall-packages
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall2.git package/openwrt-passwall2
 git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall.git package/openwrt-passwall
-git clone --depth=1 https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
+git clone --depth=1 https://github.com/sirpdboy/luci-app-ddns-go.git package/luci-app-ddns-go
+#git clone --depth=1 https://github.com/Leo-Jo-My/luci-theme-opentomcat.git package/luci-theme-opentomcat
 
 # Delete mosdns
 #rm -rf feeds/packages/net/mosdns
