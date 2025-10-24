@@ -224,13 +224,6 @@ jobs:
 #      env:
 #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #
-    - name: Telegram notification
-      run: |
-        MSG="
-        编译时间：${{ env.DATE }}
-        ARMv8 编译完成
-        "
-        curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
   x86-official:
     name: x86o
@@ -403,14 +396,6 @@ jobs:
         body: |
           * x86 24.10
           * Default IP: 192.168.1.1
-
-    - name: Telegram notification
-      run: |
-        MSG="
-        编译时间：${{ env.DATE }}
-        x86 official编译完成
-        "
-        curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=${MSG}"
 
   delete:
     runs-on: ubuntu-latest
